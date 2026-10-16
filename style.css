@@ -1,0 +1,281 @@
+/* Paleta de "Cada espacio de mí es un poema" (versión de septiembre) */
+:root{
+  --body: #f4f3f1;
+  --stage: #FAF7EA;
+  --panel: #bcd4c7;
+  --line: #dbd9d4;
+  --cream: #FEFAE5;
+  --sage: #85B19B;
+  --sage-dark: #729d87;
+  --rust: #AF5515;
+  --text: #2c2c2a;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--body);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  height: 100%;
+}
+.wrap {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  min-height: 100vh;
+}
+@media (max-width: 820px) {
+  .wrap { grid-template-columns: 1fr; }
+}
+.panel {
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+h1 {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.15;
+  margin: 0 0 6px 0;
+  color: var(--rust);
+}
+.sub {
+  color: var(--text);
+  opacity: .8;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+select, input[type=range], input[type=text], input[type=date], textarea {
+  width: 100%;
+}
+select, input[type=text], input[type=date], textarea {
+  background: var(--cream);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 9px 10px;
+  font-family: inherit;
+  font-size: 14px;
+}
+textarea {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.5;
+}
+select:focus, input[type=text]:focus, input[type=date]:focus, textarea:focus {
+  outline: none;
+  border-color: var(--sage);
+}
+input[type=range] {
+  accent-color: var(--sage);
+}
+input[type=range]:disabled { opacity: .45; }
+.rangeval {
+  font-size: 13px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+button {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .15s ease, border-color .15s ease, opacity .15s ease;
+}
+button.primary {
+  background: var(--sage);
+  color: var(--cream);
+}
+button.primary:hover:not(:disabled) { background: var(--sage-dark); }
+button.primary:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+button.secondary {
+  background: var(--cream);
+  color: var(--text);
+  border-color: var(--line);
+}
+button.secondary:hover { border-color: var(--sage); }
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 92px;
+  padding: 24px 36px;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--stage);
+}
+/* Hoja + botón de rotar al lado. La hoja entra entera en la pantalla:
+   toma el alto disponible, o el ancho si la ventana es angosta */
+.sheet-row {
+  --ar: 0.7727; /* 8.5 / 11 */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 100px;
+  /* Compensa el botón de la derecha para que la hoja quede al centro */
+  padding-left: 164px;
+}
+.sheet-row.landscape { --ar: 1.2941; }
+#canvas-holder {
+  position: relative;
+  line-height: 0;
+  background: #ffffff;
+  aspect-ratio: var(--ar);
+  height: min(calc(100vh - 280px), calc((100vw - 420px - 72px - 328px) / var(--ar)));
+}
+.rotate-btn {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  width: 64px;
+  font-size: 12px;
+  background: var(--cream);
+  color: var(--text);
+  border-color: var(--line);
+}
+.rotate-btn:hover { border-color: var(--sage); }
+.rotate-btn.active { background: var(--sage); border-color: var(--sage); color: var(--cream); }
+.rotate-btn.active svg { stroke: var(--cream); }
+.side-tools { flex: none; display: flex; flex-direction: column; gap: 10px; }
+#canvas-holder canvas.turned { transform: rotate(180deg); }
+/* Texto que gira alrededor de la hoja (solo en pantalla) */
+#canvas-holder canvas#ring {
+  position: absolute;
+  left: -92px; top: -92px;
+  width: calc(100% + 184px);
+  height: calc(100% + 184px);
+  pointer-events: none;
+  z-index: 30; /* siempre por encima, que nada la tape */
+}
+.rotate-btn svg {
+  width: 26px; height: 26px;
+  fill: none; stroke: var(--rust); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+/* Formatos */
+.formats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.format-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  font-size: 12px;
+  background: var(--cream);
+  color: var(--text);
+  border-color: var(--line);
+}
+.format-btn:hover { border-color: var(--sage); }
+.format-btn svg { width: 24px; height: 31px; fill: none; stroke: currentColor; stroke-width: 2; }
+.format-btn svg .cut { stroke-dasharray: 3 2.5; stroke-width: 1.5; }
+.format-btn.active { background: var(--sage); border-color: var(--sage); color: var(--cream); }
+#canvas-holder canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+/* Esquinas del marco */
+.corner {
+  position: absolute;
+  width: 22px; height: 22px;
+  pointer-events: none;
+}
+.corner-tl { top: -9px; left: -9px; border-top: 3px solid var(--rust); border-left: 3px solid var(--rust); }
+.corner-tr { top: -9px; right: -9px; border-top: 3px solid var(--rust); border-right: 3px solid var(--rust); }
+.corner-bl { bottom: -9px; left: -9px; border-bottom: 3px solid var(--rust); border-left: 3px solid var(--rust); }
+.corner-br { bottom: -9px; right: -9px; border-bottom: 3px solid var(--rust); border-right: 3px solid var(--rust); }
+
+.checkbox-field { flex-direction: row; }
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+}
+.field .checkbox-label { color: var(--text); font-size: 14px; font-weight: 400; }
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--sage);
+}
+.count {
+  font-size: 13px;
+  color: var(--text);
+  opacity: .7;
+  min-height: 18px;
+}
+.count.warn { color: var(--rust); opacity: 1; font-weight: 600; }
+
+#printImg { display: none; }
+@media print {
+  body { background: #fff; }
+  .wrap { display: none; }
+  #printImg { display: block; width: 100%; height: auto; }
+}
+@media (max-width: 820px) {
+  .panel { border-right: 0; border-bottom: 1px solid var(--line); padding: 28px 16px; }
+  .panel { height: auto; overflow: visible; }
+  .stage { padding: 24px 16px; height: auto; overflow: visible; }
+  .sheet-row { flex-direction: column; align-items: center; gap: 16px; padding-left: 0; width: 100%; }
+  #canvas-holder { width: 100%; height: auto; }
+  #canvas-holder canvas#ring { display: none; }
+  .rotate-btn { flex-direction: row; width: auto; padding: 8px 14px; }
+  .side-tools { flex-direction: row; }
+}
+
+/* Poemas de las cuatro postales */
+.postcard-fields { display: flex; flex-direction: column; gap: 6px; }
+.postcard-fields .mini { font-weight: 500; font-size: 12px; margin-top: 6px; }
+.postcard-fields textarea { min-height: 64px; }
+input[type=date]:disabled { opacity: .5; }
+
+/* Tintas, como los cartuchos asomando de la caja */
+.inks {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.ink {
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  position: relative;
+}
+.ink:hover { filter: brightness(1.08); }
+.ink.active::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 2px solid var(--cream);
+  border-radius: 3px;
+}

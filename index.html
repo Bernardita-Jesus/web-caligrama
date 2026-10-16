@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caligramas y poemas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<style id="print-orientation">@page { size: letter portrait; margin: 0; }</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel">
+    <div>
+      <h1>Caligramas y poemas</h1>
+      <p class="sub">Inspirado en Huidobro, este proyecto permite dibujar sobre la hoja con el mouse o el dedo, haciendo que el texto recorra los trazos en el orden y la dirección en que los dibujas.</p>
+    </div>
+
+    <div class="field">
+      <label>Formato</label>
+      <div class="formats" id="formats">
+        <button class="format-btn active" data-format="full" type="button">
+          <svg viewBox="0 0 34 44"><rect x="2" y="2" width="30" height="40" rx="1"/></svg>
+          Hoja completa
+        </button>
+        <button class="format-btn" data-format="card" type="button">
+          <svg viewBox="0 0 34 44"><rect x="2" y="2" width="30" height="40" rx="1"/><line class="cut" x1="2" y1="22" x2="32" y2="22"/></svg>
+          Tarjeta
+        </button>
+        <button class="format-btn" data-format="postcards" type="button">
+          <svg viewBox="0 0 34 44"><rect x="2" y="2" width="30" height="40" rx="1"/><line class="cut" x1="2" y1="22" x2="32" y2="22"/><line class="cut" x1="17" y1="2" x2="17" y2="42"/></svg>
+          4 postales
+        </button>
+      </div>
+    </div>
+
+    <div class="field" id="singleText">
+      <label for="text">Texto</label>
+      <textarea id="text">El corazón tiene razones que la razón no entiende, guarda nombres pequeños, tardes de lluvia, una canción que vuelve sin avisar y la certeza tibia de que alguien, en algún lugar, también está pensando en ti.</textarea>
+    </div>
+
+    <div class="field" id="cardTexts" hidden>
+      <label>Poemas, uno por mitad</label>
+      <p class="sub">Cada poema recorre solo lo que dibujes en su mitad de la tarjeta.</p>
+      <div class="postcard-fields">
+        <label class="mini" for="cd1" id="cardLabel1">Mitad de arriba · contraportada</label>
+        <textarea class="card-text" id="cd1" rows="3">Gracias por cada tarde, cada risa y cada abrazo que guardo.</textarea>
+        <label class="mini" for="cd2" id="cardLabel2">Mitad de abajo · portada</label>
+        <textarea class="card-text" id="cd2" rows="3">Feliz cumpleaños, que este año te encuentre llena de luz.</textarea>
+      </div>
+    </div>
+
+    <div class="field" id="postcardTexts" hidden>
+      <label>Poemas, uno por postal</label>
+      <p class="sub">Cada poema recorre solo lo que dibujes en su postal.</p>
+      <div class="postcard-fields">
+        <label class="mini" for="pc1">Postal 1 · arriba a la izquierda</label>
+        <textarea class="postcard-text" id="pc1" rows="3">El corazón tiene razones que la razón no entiende.</textarea>
+        <label class="mini" for="pc2">Postal 2 · arriba a la derecha</label>
+        <textarea class="postcard-text" id="pc2" rows="3">Guarda nombres pequeños, tardes de lluvia.</textarea>
+        <label class="mini" for="pc3">Postal 3 · abajo a la izquierda</label>
+        <textarea class="postcard-text" id="pc3" rows="3">Una canción que vuelve sin avisar.</textarea>
+        <label class="mini" for="pc4">Postal 4 · abajo a la derecha</label>
+        <textarea class="postcard-text" id="pc4" rows="3">Alguien, en algún lugar, también está pensando en ti.</textarea>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Dibujo</label>
+      <div class="row">
+        <button class="secondary" id="undo" type="button">Deshacer</button>
+        <button class="secondary" id="clear" type="button">Borrar todo</button>
+      </div>
+    </div>
+
+    <div class="field checkbox-field">
+      <label class="checkbox-label">
+        <input type="checkbox" id="repeat">
+        Repetir el texto hasta cubrir el dibujo
+      </label>
+    </div>
+
+    <div class="field">
+      <label>Tamaño de letra: <span class="rangeval" id="sizeVal">16</span> px</label>
+      <input type="range" id="size" min="6" max="60" value="16" disabled>
+      <p class="sub" id="sizeNote">Se ajusta solo para que tu texto recorra todo el dibujo. Activa "Repetir" para elegirlo tú.</p>
+    </div>
+
+    <div class="field">
+      <label>Color de la tinta: <span class="rangeval" id="inkName">Negro</span></label>
+      <div class="inks" id="inks"></div>
+      <label class="checkbox-label">
+        <input type="checkbox" id="rainbow">
+        Usar todos los colores (una letra de cada uno)
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="checkbox-label">
+        <input type="checkbox" id="useDate" checked>
+        Fecha arriba a la derecha
+      </label>
+      <input type="date" id="date">
+      <p class="sub" id="datePreview"></p>
+    </div>
+
+    <div class="field">
+      <label>Firma (opcional)</label>
+      <div class="row">
+        <input type="text" id="para" placeholder="Para">
+        <input type="text" id="de" placeholder="De">
+      </div>
+    </div>
+
+    <div class="field">
+      <button class="primary" id="download">Descargar PDF</button>
+      <button class="secondary" id="print">Imprimir</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="count">Tamaño carta · 8.5 × 11 in</span>
+    <div class="sheet-row" id="sheet-row">
+      <div id="canvas-holder">
+        <canvas id="sheet"></canvas>
+        <span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+        <span class="corner corner-bl"></span><span class="corner corner-br"></span>
+        <canvas id="ring" aria-hidden="true"></canvas>
+      </div>
+      <div class="side-tools">
+        <button class="rotate-btn" id="rotate" type="button" title="Rotar la hoja">
+          <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
+          Rotar
+        </button>
+        <button class="rotate-btn" id="turnView" type="button" title="Girar la vista 180° para ver derecha la mitad de arriba" hidden>
+          <svg viewBox="0 0 24 24"><path d="M7 4v6h6"/><path d="M7 10a7 7 0 1 1 1.5 6.5"/></svg>
+          Dar vuelta
+        </button>
+      </div>
+    </div>
+    <span class="count" id="status"></span>
+  </div>
+</div>
+<img id="printImg" alt="">
+
+<script src="script.js"></script>
+</body>
+</html>
